@@ -15,7 +15,6 @@ func loginHandler(c *gin.Context) {
 	var cred Credentials
 	cred.Username = c.PostForm("username")
 	cred.Password = c.PostForm("password")
-
 	if cred.Username == "superadmin" && cred.Password == "superpassword" {
 		cookie := &http.Cookie{
 			Name:     "username",
@@ -24,13 +23,14 @@ func loginHandler(c *gin.Context) {
 			HttpOnly: true,
 		}
 		http.SetCookie(c.Writer, cookie)
-		c.JSON(http.StatusOK, gin.H{"message": "Login Sucessfull"})
+		c.Redirect(http.StatusSeeOther, "/home")
 	} else {
-		c.JSON(http.StatusUnauthorized, gin.H{"error": "Invalid Credentials"})
+		c.Redirect(http.StatusSeeOther, "/")
 	}
 }
 
 func showLoginPage(c *gin.Context) {
+	c.Header("Cache-Control", "no-store, must-revalidate")
 	if _, err := c.Request.Cookie("username"); err == nil {
 		c.Redirect(http.StatusSeeOther, "/home")
 	} else {
@@ -39,11 +39,27 @@ func showLoginPage(c *gin.Context) {
 }
 
 func showHomePage(c *gin.Context) {
+	c.Header("Cache-Control", "no-store, must-revalidate")
 	if _, err := c.Request.Cookie("username"); err == nil {
 		c.HTML(http.StatusAccepted, "home.html", nil)
 	} else {
-		c.Redirect(http.StatusSeeOther, "/login")
+		c.Redirect(http.StatusSeeOther, "/")
 	}
+}
+
+func logoutHandler(c *gin.Context) {
+	c.Header("Cache-Control", "no-store, must-revalidate")
+	if _, err := c.Request.Cookie("username"); err == nil {
+		cookie := &http.Cookie{
+			Name:     "username",
+			Value:    "",
+			Path:     "/",
+			HttpOnly: true,
+			MaxAge:   -1,
+		}
+		http.SetCookie(c.Writer, cookie)
+	}
+	c.Redirect(http.StatusSeeOther, "/")
 }
 
 func main() {
@@ -52,6 +68,8 @@ func main() {
 	r.LoadHTMLGlob("template/*")
 	r.GET("/", showLoginPage)
 	r.GET("/home", showHomePage)
-	r.POST("/login", loginHandler)
+	r.POST("/loginHandler", loginHandler)
+	r.GET("/login", showLoginPage)
+	r.GET("/logout", logoutHandler)
 	r.Run()
 }
