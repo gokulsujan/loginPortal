@@ -31,7 +31,11 @@ func loginHandler(c *gin.Context) {
 }
 
 func showLoginPage(c *gin.Context) {
-	c.HTML(http.StatusOK, "index.html", nil)
+	if _, err := c.Request.Cookie("username"); err == nil {
+		c.Redirect(http.StatusSeeOther, "/home")
+	} else {
+		c.HTML(http.StatusOK, "index.html", nil)
+	}
 }
 
 func main() {
