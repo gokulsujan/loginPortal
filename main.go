@@ -17,6 +17,13 @@ func loginHandler(c *gin.Context) {
 	cred.Password = c.PostForm("password")
 
 	if cred.Username == "superadmin" && cred.Password == "superpassword" {
+		cookie := &http.Cookie{
+			Name:     "username",
+			Value:    cred.Username,
+			Path:     "/",
+			HttpOnly: true,
+		}
+		http.SetCookie(c.Writer, cookie)
 		c.JSON(http.StatusOK, gin.H{"message": "Login Sucessfull"})
 	} else {
 		c.JSON(http.StatusUnauthorized, gin.H{"error": "Invalid Credentials"})
