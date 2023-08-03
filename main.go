@@ -13,10 +13,8 @@ type Credentials struct {
 
 func loginHandler(c *gin.Context) {
 	var cred Credentials
-	if err := c.ShouldBindJSON(&cred); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid JSOn Data"})
-		return
-	}
+	cred.Username = c.PostForm("username")
+	cred.Password = c.PostForm("password")
 
 	if cred.Username == "superadmin" && cred.Password == "superpassword" {
 		c.JSON(http.StatusOK, gin.H{"message": "Login Sucessfull"})
@@ -26,10 +24,14 @@ func loginHandler(c *gin.Context) {
 }
 
 func showLoginPage(c *gin.Context) {
-	c.HTML(http.StatusOK, "login.html", nil)
+	c.HTML(http.StatusOK, "index.html", nil)
 }
 
 func main() {
 	r := gin.Default()
+	r.Static("/static", "/template")
+	r.LoadHTMLGlob("template/*")
+	r.GET("/", showLoginPage)
+	r.POST("/login", loginHandler)
 	r.Run()
 }
