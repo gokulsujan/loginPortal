@@ -38,11 +38,20 @@ func showLoginPage(c *gin.Context) {
 	}
 }
 
+func showHomePage(c *gin.Context) {
+	if _, err := c.Request.Cookie("username"); err == nil {
+		c.HTML(http.StatusAccepted, "home.html", nil)
+	} else {
+		c.Redirect(http.StatusSeeOther, "/login")
+	}
+}
+
 func main() {
 	r := gin.Default()
 	r.Static("/static", "/template")
 	r.LoadHTMLGlob("template/*")
 	r.GET("/", showLoginPage)
+	r.GET("/home", showHomePage)
 	r.POST("/login", loginHandler)
 	r.Run()
 }
