@@ -1,12 +1,26 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Home Page</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+  <title>Home Page</title>
+  <style>
+    body {
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+  </style>
 </head>
 <body>
-    <p>Welcome to home page</p>
-    
+
+<div class="container text-center">
+  <h1>Hello {{ .username }},</h1>
+  <p>Welcome to the portal.</p>
+  <a class="btn btn-primary" href="/logout">Logout</a>
+</div>
+
 </body>
 </html>

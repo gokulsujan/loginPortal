@@ -40,8 +40,9 @@ func showLoginPage(c *gin.Context) {
 
 func showHomePage(c *gin.Context) {
 	c.Header("Cache-Control", "no-store, must-revalidate")
-	if _, err := c.Request.Cookie("username"); err == nil {
-		c.HTML(http.StatusAccepted, "home.html", nil)
+	if Cookie, err := c.Request.Cookie("username"); err == nil {
+
+		c.HTML(http.StatusAccepted, "home.html", gin.H{"username": Cookie.Value})
 	} else {
 		c.Redirect(http.StatusSeeOther, "/")
 	}
@@ -68,7 +69,7 @@ func main() {
 	r.LoadHTMLGlob("template/*")
 	r.GET("/", showLoginPage)
 	r.GET("/home", showHomePage)
-	r.POST("/loginHandler", loginHandler)
+	r.POST("/login", loginHandler)
 	r.GET("/login", showLoginPage)
 	r.GET("/logout", logoutHandler)
 	r.Run()
