@@ -25,7 +25,7 @@ func loginHandler(c *gin.Context) {
 		http.SetCookie(c.Writer, cookie)
 		c.Redirect(http.StatusSeeOther, "/home")
 	} else {
-		c.Redirect(http.StatusSeeOther, "/")
+		c.HTML(http.StatusOK, "index.html", gin.H{"Error": "Invalid Credentials"})
 	}
 }
 
